@@ -1,0 +1,7 @@
+{
+    "startTime":"10:00",
+    "endTime":"19:00",
+    "breakTime":"1:00",
+    "outTimeLimit":"5:00",
+    "weekEnd":"true"
+}
