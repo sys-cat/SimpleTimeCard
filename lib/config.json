@@ -3,5 +3,8 @@
     "endTime":"19:00",
     "breakTime":"1:00",
     "outTimeLimit":"5:00",
-    "weekEnd":"true"
+    "weekEnd":"true",
+    "fileSetting":{
+        "outputDir":"../calendar/output.json"
+    }
 }
