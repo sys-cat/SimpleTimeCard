@@ -30,8 +30,35 @@ class TimeCard
         }
     }
 
+    // Init TimeCard
+    public function init()
+    {
+        return $this->jsonSetting();
+    }
+
+    // Output JSON Setting
+    private function jsonSetting()
+    {
+        $outPath = file_get_contents($this->outPutDir);
+        $outPathArr = json_encode($outPath, true);
+        if(0>count($outPathArr)) {
+            return false;
+        } else {
+            $month = $this->setThisMonth();
+            try {
+                $openJson = fopen($this->outPutDir, 'a+');
+                $month = json_encode($month);
+                fwrite($openJson, $month);
+                fclose($openJson);
+                return true;
+            } catch(\Exception $e) {
+                return false;
+            }
+        }
+    }
+
     // Get this Month
-    public function setThisMonth()
+    private function setThisMonth()
     {
         $thisYear = date("Y");
         $thisMonth = date("m");
@@ -39,7 +66,11 @@ class TimeCard
         $days[$thisYear][$thisMonth]=[];
         $thisDate=[];
         for($i=1;$i<(int)$end+1;$i++) {
-            $thisDate[$i] = $i;
+            $thisDate[$i] = [
+                "date"=>$i,
+                "start"=>"",
+                "end"=>""
+            ];
         }
         $days[$thisYear][$thisMonth]=$thisDate;
         return $days;
@@ -47,6 +78,6 @@ class TimeCard
 }
 
 $card = new TimeCard();
-$cal = $card->setThisMonth();
-var_dump($cal);
+$setJson = $card->init();
+var_dump($setJson);
 var_dump($card);
