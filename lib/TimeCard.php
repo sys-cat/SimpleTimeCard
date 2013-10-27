@@ -33,7 +33,12 @@ class TimeCard
     // Init TimeCard
     public function init()
     {
-        return $this->jsonSetting();
+        if($this->jsonSetting()) {
+            $file = file_get_contents($this->outPutDir);
+            return $result = json_decode($file,true);
+        } else {
+            return false;
+        }
     }
 
     // Output JSON Setting
@@ -41,9 +46,9 @@ class TimeCard
     {
         $outPath = file_get_contents($this->outPutDir);
         $outPathArr = json_decode($outPath, true);
-        if(0>count($outPathArr)) {
-            $thisYear = date("Y");
-            $thisMonth = date("m");
+        $thisYear = date("Y");
+        $thisMonth = date("m");
+        if(count($outPathArr)>0) {
             if(!empty($outPathArr[$thisYear][$thisMonth])) {
                 return true;
             } else {
