@@ -40,9 +40,32 @@ class TimeCard
     private function jsonSetting()
     {
         $outPath = file_get_contents($this->outPutDir);
-        $outPathArr = json_encode($outPath, true);
+        $outPathArr = json_decode($outPath, true);
         if(0>count($outPathArr)) {
-            return false;
+            $thisYear = date("Y");
+            $thisMonth = date("m");
+            if(!empty($outPathArr[$thisYear][$thisMonth])) {
+                return true;
+            } else {
+                $month = $this->setThisMonth();
+                try {
+                    $openJson = fopen($this->outPutDir, 'a+');
+                    //$month = json_encode($month);
+                    if(!empty($outPathArr[$thisYear])) {
+                        $outPathArr[$thisYear]=$month[$thisYear][$thisMonth];
+                        $month = json_encode($outPathArr);
+                        fwrite($openJson, $month);
+                    } else {
+                        $outPathArr[] = $month;
+                        $month = json_encode($outPathArr);
+                        fwrite($openJson, $month);
+                    }
+                    fclose($openJson);
+                    return true;
+                } catch(\Exception $e) {
+                    return false;
+                }
+            }
         } else {
             $month = $this->setThisMonth();
             try {
@@ -76,8 +99,3 @@ class TimeCard
         return $days;
     }
 }
-
-$card = new TimeCard();
-$setJson = $card->init();
-var_dump($setJson);
-var_dump($card);
