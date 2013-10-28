@@ -20,6 +20,8 @@ class TimeCard
         if($configArr==null){
             return false;
         } else {
+            $this->thisYear = date("Y");
+            $this->thisMonth = date("m");
             $this->startTime = $configArr["startTime"];
             $this->endTime = $configArr["endTime"];
             $this->breakTime = $configArr["breakTime"];
@@ -30,12 +32,17 @@ class TimeCard
         }
     }
 
+    /*
+     * Init TimeCard
+     *
+     */
     // Init TimeCard
     public function init()
     {
         if($this->jsonSetting()) {
             $file = file_get_contents($this->outPutDir);
-            return $result = json_decode($file,true);
+            $result = json_decode($file,true);
+            return $result[$this->thisYear][$this->thisMonth];
         } else {
             return false;
         }
@@ -102,5 +109,38 @@ class TimeCard
         }
         $days[$thisYear][$thisMonth]=$thisDate;
         return $days;
+    }
+
+    /*
+     * Update TimeCard
+     */
+    // Update TimeCard
+    public function updateTime($params=array())
+    {
+        if(count($params)>0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private function updateTodayStart()
+    {}
+
+    private function updateTodayEnd()
+    {}
+
+    /*
+     * Tools
+     */
+    public function workingTime($start, $end)
+    {
+        if(empty($start)) {
+            $start = $this->startTime;
+        }
+        if(empty($end)) {
+            $end = $this->endTime;
+        }
+        return true;
     }
 }
