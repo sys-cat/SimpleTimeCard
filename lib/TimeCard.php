@@ -22,6 +22,8 @@ class TimeCard
         } else {
             $this->thisYear = date("Y");
             $this->thisMonth = date("m");
+            $this->thisDates = date("t");
+            $this->thisDay = date("d");
             $this->startTime = $configArr["startTime"];
             $this->endTime = $configArr["endTime"];
             $this->breakTime = $configArr["breakTime"];
@@ -30,6 +32,12 @@ class TimeCard
             $this->outPutDir = __DIR__.DIRECTORY_SEPARATOR.$configArr["fileSetting"]["outputDir"];
             return true;
         }
+    }
+
+    public function debugJSON() {
+        $file = file_get_contents($this->outPutDir);
+        return $result = json_decode($file, true);
+        //return $result[$this->thisYear][$this->thisMonth];
     }
 
     /*
@@ -53,25 +61,23 @@ class TimeCard
     {
         $outPath = file_get_contents($this->outPutDir);
         $outPathArr = json_decode($outPath, true);
-        $thisYear = date("Y");
-        $thisMonth = date("m");
         if(count($outPathArr)>0) {
-            if(!empty($outPathArr[$thisYear][$thisMonth])) {
+            if(!empty($outPathArr[$this->thisYear][$this->thisMonth])) {
                 return true;
             } else {
                 $month = $this->setThisMonth();
                 try {
-                    $openJson = fopen($this->outPutDir, 'a+');
-                    //$month = json_encode($month);
-                    if(!empty($outPathArr[$thisYear])) {
-                        $outPathArr[$thisYear]=$month[$thisYear][$thisMonth];
-                        $month = json_encode($outPathArr);
-                        fwrite($openJson, $month);
+                    // ファイルを開いて空にして書き込む
+                    $openJson = fopen($this->outPutDir, 'r+');
+                    ftruncate($openJson, 0);
+                    fseek($openJson, 0);
+                    if(!empty($outPathArr[$this->thisYear])) {
+                        $outPathArr[$this->thisYear][$this->thisMonth]=$month;
                     } else {
                         $outPathArr[] = $month;
-                        $month = json_encode($outPathArr);
-                        fwrite($openJson, $month);
                     }
+                    $month = json_encode($outPathArr);
+                    fwrite($openJson, $month);
                     fclose($openJson);
                     return true;
                 } catch(\Exception $e) {
@@ -81,7 +87,10 @@ class TimeCard
         } else {
             $month = $this->setThisMonth();
             try {
-                $openJson = fopen($this->outPutDir, 'a+');
+                // ファイルを開いて空にして書き込む
+                $openJson = fopen($this->outPutDir, 'r+');
+                ftruncate($openJson, 0);
+                fseek($openJson, 0);
                 $month = json_encode($month);
                 fwrite($openJson, $month);
                 fclose($openJson);
@@ -95,10 +104,8 @@ class TimeCard
     // Get this Month
     private function setThisMonth()
     {
-        $thisYear = date("Y");
-        $thisMonth = date("m");
         $end = date("t");
-        $days[$thisYear][$thisMonth]=[];
+        $days[$this->thisYear][$this->thisMonth]=[];
         $thisDate=[];
         for($i=1;$i<(int)$end+1;$i++) {
             $thisDate[$i] = [
@@ -107,7 +114,7 @@ class TimeCard
                 "end"=>""
             ];
         }
-        $days[$thisYear][$thisMonth]=$thisDate;
+        $days[$this->thisYear][$this->thisMonth]=$thisDate;
         return $days;
     }
 
@@ -118,17 +125,52 @@ class TimeCard
     public function updateTime($params=array())
     {
         if(count($params)>0) {
+            // 出勤時間確認
+            if(!empty($params["start"])) {
+                $params["start"] = $this->updateTodayStart($params["start"]);
+            } else {
+                $params["start"] = $this->updateTodayStart();
+            }
+            // 退勤時間確認
+            if(!empty($params["end"])) {
+                $params["end"] = $this->updateTodayEnd($params["end"]);
+            } else {
+                $params["end"] = $this->updateTodayEnd();
+            }
+            $json = file_get_contents($this->outPutDir);
+            $jsonArr = json_decode($json, true);
+            $jsonArr[$params["Year"]][$params["Month"]][$params["Date"]] = [
+                "start" => $params["start"],
+                "end" => $params["end"]
+            ];
+            // ファイルを開いて空にして書き込む
+            $openJson = fopen($this->outPutDir, 'r+');
+            ftruncate($openJson, 0);
+            fseek($openJson, 0);
+            $json = json_encode($jsonArr);
+            fwrite($openJson, $json);
+            fclose($openJson);
             return true;
         } else {
             return false;
         }
     }
 
-    private function updateTodayStart()
-    {}
+    private function updateTodayStart($startTime=null)
+    {
+        if(empty($startTime)) {
+            $startTime = $this->startTime;
+        }
+        return $startTime;
+    }
 
-    private function updateTodayEnd()
-    {}
+    private function updateTodayEnd($endTime=null)
+    {
+        if(empty($endTime)) {
+            $endTime = $this->endTime;
+        }
+        return $endTime;
+    }
 
     /*
      * Tools
@@ -141,6 +183,6 @@ class TimeCard
         if(empty($end)) {
             $end = $this->endTime;
         }
-        return true;
+        return [$start, $end];
     }
 }
