@@ -4,7 +4,24 @@ require_once("./lib/TimeCard.php");
 use \SimpleTimeCard\TimeCard as TCard;
 
 $card = new TCard();
-$setJson = $card->init();
+
+if(!empty($_GET["d"])) {
+    $param=[
+        "Year"=>$_GET["y"],
+        "Month"=>$_GET["m"],
+        "Date"=>$_GET["d"]
+    ];
+    if($_GET["t"]=="s") {
+        $param["start"]=$_GET["time"];
+    }else{
+        $param["end"]=$_GET["time"];
+    }
+    if($card->updateTime($param)) {
+        $setJson = $card->init();
+    }
+} else {
+    $setJson = $card->init();
+}
 ?>
 <!doctype html>
 <html lang="ja">
@@ -18,8 +35,20 @@ $setJson = $card->init();
     <?php for($i=1;$i<$card->thisDates+1;$i++): ?>
     <tr>
         <th><?php echo $i ?>日</th>
-        <td><a href="index.php?d=<?php echo $i ?>&t=s&d=<?php echo date("h:i") ?>">出勤</a></td>
-        <td><a href="index.php?d=<?php echo $i ?>&t=e&d=<?php echo date("h:i") ?>">退勤</a></td>
+        <td>
+            <?php if(!empty($setJson[$i]["start"])): ?>
+                <?php echo $setJson[$i]["start"] ?>
+            <?php else: ?>
+            <a href="index.php?y=<?php echo $card->thisYear ?>&m=<?php echo $card->thisMonth ?>&d=<?php echo $i ?>&t=s&time=<?php echo date("H:i") ?>">出勤</a>
+            <?php endif; ?>
+        </td>
+        <td>
+            <?php if(!empty($setJson[$i]["end"])): ?>
+                <?php echo $setJson[$i]["end"] ?>
+            <?php else: ?>
+            <a href="index.php?y=<?php echo $card->thisYear ?>&m=<?php echo $card->thisMonth ?>&d=<?php echo $i ?>&t=e&time=<?php echo date("H:i") ?>">退勤</a>
+            <?php endif; ?>
+        </td>
     </tr>
     <?php endfor; ?>
 </table>

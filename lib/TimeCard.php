@@ -125,20 +125,25 @@ class TimeCard
     public function updateTime($params=array())
     {
         if(count($params)>0) {
+            $json = file_get_contents($this->outPutDir);
+            $jsonArr = json_decode($json, true);
             // 出勤時間確認
             if(!empty($params["start"])) {
                 $params["start"] = $this->updateTodayStart($params["start"]);
+            } elseif(!empty($jsonArr[$params["Year"]][$params["Month"]][$params["Date"]]["start"])) {
+                $params["start"] = $jsonArr[$params["Year"]][$params["Month"]][$params["Date"]]["start"];
             } else {
-                $params["start"] = $this->updateTodayStart();
+                $params["start"] = "";
+
             }
             // 退勤時間確認
             if(!empty($params["end"])) {
                 $params["end"] = $this->updateTodayEnd($params["end"]);
+            } elseif(!empty($jsonArr[$params["Year"]][$params["Month"]][$params["Date"]]["end"])) {
+                $params["end"] = $jsonArr[$params["Year"]][$params["Month"]][$params["Date"]]["end"];
             } else {
-                $params["end"] = $this->updateTodayEnd();
+                $params["end"] = "";
             }
-            $json = file_get_contents($this->outPutDir);
-            $jsonArr = json_decode($json, true);
             $jsonArr[$params["Year"]][$params["Month"]][$params["Date"]] = [
                 "start" => $params["start"],
                 "end" => $params["end"]
