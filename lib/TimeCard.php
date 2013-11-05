@@ -191,3 +191,4 @@ class TimeCard
         return [$start, $end];
     }
 }
+
