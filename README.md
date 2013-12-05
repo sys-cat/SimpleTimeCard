@@ -1,5 +1,6 @@
 SimpleTimeCard
 ==============
+***これはPHP5.3用に色んなところ修正したものです！***
 
 Simple Time Card project
 
