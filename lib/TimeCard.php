@@ -182,7 +182,7 @@ class TimeCard
         if(empty($end)) {
             $end = $this->endTime;
         }
-        return [$start, $end];
+        return array($start, $end);
     }
 }
 
