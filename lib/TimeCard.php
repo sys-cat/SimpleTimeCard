@@ -138,10 +138,10 @@ class TimeCard
             } else {
                 $params["end"] = "";
             }
-            $jsonArr[$params["Year"]][$params["Month"]][$params["Date"]] = [
+            $jsonArr[$params["Year"]][$params["Month"]][$params["Date"]] = array(
                 "start" => $params["start"],
                 "end" => $params["end"]
-            ];
+            );
             // ファイルを開いて空にして書き込む
             $openJson = fopen($this->outPutDir, 'r+');
             ftruncate($openJson, 0);
