@@ -105,11 +105,11 @@ class TimeCard
         $days[$this->thisYear][$this->thisMonth]=array();
         $thisDate=array();
         for($i=1;$i<(int)$end+1;$i++) {
-            $thisDate[$i] = [
+            $thisDate[$i] = array(
                 "date"=>$i,
                 "start"=>"",
                 "end"=>""
-            ];
+            );
         }
         $days[$this->thisYear][$this->thisMonth]=$thisDate;
         return $days;
