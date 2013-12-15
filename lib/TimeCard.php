@@ -37,13 +37,9 @@ class TimeCard
     public function debugJSON() {
         $file = file_get_contents($this->outPutDir);
         return $result = json_decode($file, true);
-        //return $result[$this->thisYear][$this->thisMonth];
+        return $result[$this->thisYear][$this->thisMonth];
     }
 
-    /*
-     * Init TimeCard
-     *
-     */
     // Init TimeCard
     public function init()
     {
@@ -106,7 +102,7 @@ class TimeCard
     {
         $end = date("t");
         $days[$this->thisYear][$this->thisMonth]=[];
-        $thisDate=[];
+        $thisDate=array();
         for($i=1;$i<(int)$end+1;$i++) {
             $thisDate[$i] = [
                 "date"=>$i,
@@ -118,9 +114,6 @@ class TimeCard
         return $days;
     }
 
-    /*
-     * Update TimeCard
-     */
     // Update TimeCard
     public function updateTime($params=array())
     {
@@ -161,6 +154,7 @@ class TimeCard
         }
     }
 
+    // updateTodayStart
     private function updateTodayStart($startTime=null)
     {
         if(empty($startTime)) {
@@ -169,6 +163,7 @@ class TimeCard
         return $startTime;
     }
 
+    // updateTodayEnd
     private function updateTodayEnd($endTime=null)
     {
         if(empty($endTime)) {
@@ -177,9 +172,7 @@ class TimeCard
         return $endTime;
     }
 
-    /*
-     * Tools
-     */
+    // workingTime
     public function workingTime($start, $end)
     {
         if(empty($start)) {
