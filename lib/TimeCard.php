@@ -3,6 +3,7 @@
  * User: makoto
  * Date: 2013/10/22
  * Todo: Create Go to Work method adn Leaving Work method. and Users Class.
+ * @group app
  */
 
 namespace SimpleTimeCard;
@@ -101,7 +102,7 @@ class TimeCard
     private function setThisMonth()
     {
         $end = date("t");
-        $days[$this->thisYear][$this->thisMonth]=[];
+        $days[$this->thisYear][$this->thisMonth]=array();
         $thisDate=array();
         for($i=1;$i<(int)$end+1;$i++) {
             $thisDate[$i] = [
